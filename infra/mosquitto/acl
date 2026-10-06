@@ -1,0 +1,5 @@
+user device
+topic write solarsense/+/readings
+
+user backend
+topic read solarsense/+/readings
