@@ -1,0 +1,24 @@
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+src = ["."]
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["UP042"]
+
+[tool.ruff.lint.per-file-ignores]
+"alembic/env.py" = ["E402"]
+"tests/conftest.py" = ["E402"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+exclude = ["alembic/", "tests/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

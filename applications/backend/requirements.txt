@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+paho-mqtt
+psycopg[binary]
+sqlalchemy
+pydantic-settings
+pydantic[email]
+pyjwt
+bcrypt
+alembic
+pandas
+scikit-learn==1.9.1
+mlflow-skinny==3.16.1
