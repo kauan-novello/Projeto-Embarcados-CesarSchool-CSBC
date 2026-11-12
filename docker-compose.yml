@@ -1,0 +1,140 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    environment:
+      MQTT_DEVICE_PASSWORD: ${MQTT_DEVICE_PASSWORD:?MQTT_DEVICE_PASSWORD is required}
+      MQTT_BACKEND_PASSWORD: ${MQTT_BACKEND_PASSWORD:?MQTT_BACKEND_PASSWORD is required}
+    command:
+      - sh
+      - -c
+      - |
+        mosquitto_passwd -b -c /mosquitto/passwd device "$$MQTT_DEVICE_PASSWORD" &&
+        mosquitto_passwd -b /mosquitto/passwd backend "$$MQTT_BACKEND_PASSWORD" &&
+        chown mosquitto:mosquitto /mosquitto/passwd &&
+        exec mosquitto -c /mosquitto/config/mosquitto.conf
+    volumes:
+      - ./infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./infra/mosquitto/acl:/mosquitto/config/acl:ro
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-solarsense}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-solarsense}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/create-airflow-db.sql:/docker-entrypoint-initdb.d/create-airflow-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-solarsense}"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  backend:
+    build: ./applications/backend
+    restart: unless-stopped
+    depends_on:
+      mosquitto:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+    environment:
+      MQTT_BROKER_HOST: mosquitto
+      MQTT_USERNAME: backend
+      MQTT_PASSWORD: ${MQTT_BACKEND_PASSWORD:?MQTT_BACKEND_PASSWORD is required}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-solarsense}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:-solarsense}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY is required}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-1440}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5173}
+    ports:
+      - "8000:8000"
+
+  sungrow-collector:
+    build: ./applications/sungrow-collector
+    restart: unless-stopped
+    user: "${UID:-1000}:${GID:-1000}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: ./applications/sungrow-collector/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-solarsense}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:-solarsense}
+      TOKEN_FILE: /app/.state/tokens.json
+    volumes:
+      - ./applications/sungrow-collector/.state:/app/.state
+
+  weather-station:
+    build: ./applications/weather-station
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    environment:
+      MQTT_BROKER_HOST: mosquitto
+      MQTT_USERNAME: device
+      MQTT_PASSWORD: ${MQTT_DEVICE_PASSWORD:?MQTT_DEVICE_PASSWORD is required}
+      PAIRING_SECONDS: ${PAIRING_SECONDS:-0}
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.16.1
+    restart: unless-stopped
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --artifacts-destination /mlflow/artifacts
+      --allowed-hosts mlflow:5000,localhost:5000,127.0.0.1:5000
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - ./mlruns/server:/mlflow
+
+  airflow:
+    build:
+      context: .
+      dockerfile: infra/airflow/Dockerfile
+    restart: unless-stopped
+    command: standalone
+    user: "${UID:-1000}:0"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-solarsense}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+      AIRFLOW__CORE__DEFAULT_TIMEZONE: America/Recife
+      SOLARSENSE_SYSTEM_ID: ${SOLARSENSE_SYSTEM_ID:?SOLARSENSE_SYSTEM_ID is required}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-solarsense}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:-solarsense}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/solarsense/src
+      - ./data:/opt/solarsense/data
+
+  ml:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-solarsense}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:-solarsense}
+      SOLARSENSE_SYSTEM_ID: ${SOLARSENSE_SYSTEM_ID:?SOLARSENSE_SYSTEM_ID is required}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+
+volumes:
+  postgres_data:
