@@ -94,6 +94,17 @@ pio device monitor
 | `esp32dev-live` | LDR, BME280, DHT11 e ZPH02, publicação a cada 2 s |
 | `esp32dev-bench` | valores simulados, sem nenhum sensor ligado |
 
+O firmware roda sobre FreeRTOS, com quatro tarefas fixadas no core de aplicação:
+
+| Tarefa | Prioridade | Função |
+|---|---|---|
+| `mqtt` | 3 | única dona do cliente MQTT: conecta, mantém a conexão e publica o que sai da fila |
+| `sensors` | 2 | lê os sensores a cada intervalo fixo (`vTaskDelayUntil`) e grava a última leitura na fila |
+| `button` | 2 | acordada por uma interrupção (task notification) quando o botão BOOT é pressionado; confirma os 3 s e abre o portal |
+| `wifi` | 1 | verifica o Wi-Fi a cada 5 s e reconecta se ele cair |
+
+A fila guarda só a leitura mais recente (`xQueueOverwrite`), para que uma leitura velha nunca seja publicada com o horário de agora. Um mutex protege a porta serial, usada por todas as tarefas.
+
 Na primeira inicialização a placa abre a rede Wi-Fi `SolarSense-XXXX`. No portal, informe o Wi-Fi, o endereço do servidor, a porta, o usuário `device` e a senha definida em `MQTT_DEVICE_PASSWORD`. Para reabrir o portal, segure o botão BOOT por 3 segundos. Depois de salvar, a placa fica 10 minutos em modo de pareamento e aparece no app para ser vinculada a um sistema.
 
 Sem placa, o simulador publica no mesmo contrato:

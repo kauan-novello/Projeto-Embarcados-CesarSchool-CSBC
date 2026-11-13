@@ -1,5 +1,6 @@
 #include "mqtt_publisher.h"
 #include "config.h"
+#include "logger.h"
 #include "provisioning.h"
 #include <ArduinoJson.h>
 #include <ESPmDNS.h>
@@ -48,19 +49,18 @@ void mqttEnsureConnected() {
 
   IPAddress brokerIp;
   if (!resolveBroker(brokerIp)) {
-    Serial.printf("Não achei o servidor %s na rede.\n", deviceConfig->brokerHost);
+    logPrintf("Não achei o servidor %s na rede.\n", deviceConfig->brokerHost);
     return;
   }
   mqttClient.setServer(brokerIp, deviceConfig->brokerPort);
 
-  Serial.printf("Conectando ao broker MQTT %s (%s)...", deviceConfig->brokerHost, brokerIp.toString().c_str());
+  logPrintf("Conectando ao broker MQTT %s (%s)...\n", deviceConfig->brokerHost, brokerIp.toString().c_str());
   if (mqttClient.connect(clientId, deviceConfig->brokerUser, deviceConfig->brokerPassword)) {
-    Serial.println(" conectado.");
+    logPrintf("Broker MQTT conectado.\n");
   } else {
-    Serial.print(" falhou, rc=");
-    Serial.println(mqttClient.state());
+    logPrintf("Conexão com o broker falhou, rc=%d\n", mqttClient.state());
     if (mqttClient.state() == MQTT_CONNECT_BAD_CREDENTIALS || mqttClient.state() == MQTT_CONNECT_UNAUTHORIZED) {
-      Serial.println("Usuário ou senha MQTT recusados: segure BOOT para reabrir o portal e corrigir.");
+      logPrintf("Usuário ou senha MQTT recusados: segure BOOT para reabrir o portal e corrigir.\n");
     }
   }
 }
@@ -100,8 +100,5 @@ void mqttPublishReading(const SensorReadings &readings) {
   const size_t payloadLen = serializeJson(doc, payload, sizeof(payload));
   mqttClient.publish(topic, (const uint8_t *)payload, payloadLen, false);
 
-  Serial.print("Publicado em ");
-  Serial.print(topic);
-  Serial.print(": ");
-  Serial.println(payload);
+  logPrintf("Publicado em %s: %s\n", topic, payload);
 }

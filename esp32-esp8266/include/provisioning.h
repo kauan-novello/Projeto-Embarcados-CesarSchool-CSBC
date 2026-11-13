@@ -4,6 +4,6 @@
 
 void provisioningBegin(DeviceConfig &config);
 
-void provisioningLoop(DeviceConfig &config);
+void provisioningOpenPortal(DeviceConfig &config);
 
 bool provisioningInPairingWindow();

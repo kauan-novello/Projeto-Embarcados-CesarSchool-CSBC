@@ -1,5 +1,6 @@
 #include "ambient_sensor.h"
 #include "config.h"
+#include "logger.h"
 #include <Adafruit_BME280.h>
 #include <Adafruit_BMP280.h>
 #include <Arduino.h>
@@ -34,23 +35,22 @@ static bool detectChip() {
     const int id = readChipId(address);
     if (id < 0) continue;
 
-    Serial.printf("Sensor ambiente em 0x%02X, chip ID 0x%02X: ", address, id);
     if (id == CHIP_ID_BME280 && bme.begin(address, &Wire)) {
       chip = AmbientChip::BME280;
       chipAddress = address;
-      Serial.println("BME280 (temp + umidade + pressão).");
+      logPrintf("Sensor ambiente em 0x%02X, chip ID 0x%02X: BME280 (temp + umidade + pressão).\n", address, id);
       return true;
     }
     if (id == CHIP_ID_BMP280 && bmp.begin(address, CHIP_ID_BMP280)) {
       chip = AmbientChip::BMP280;
       chipAddress = address;
-      Serial.println("BMP280 (temp + pressão, sem umidade).");
+      logPrintf("Sensor ambiente em 0x%02X, chip ID 0x%02X: BMP280 (temp + pressão, sem umidade).\n", address, id);
       return true;
     }
-    Serial.println("chip não reconhecido.");
+    logPrintf("Sensor ambiente em 0x%02X, chip ID 0x%02X: chip não reconhecido.\n", address, id);
   }
 
-  Serial.println("Sensor ambiente não encontrado (confira VCC 3V3, SDA/SCL e GND).");
+  logPrintf("Sensor ambiente não encontrado (confira VCC 3V3, SDA/SCL e GND).\n");
   return false;
 }
 
@@ -66,7 +66,7 @@ static uint8_t expectedChipId() {
 static bool chipStillResponds() {
   if (readChipId(chipAddress) == expectedChipId()) return true;
 
-  Serial.println("Sensor ambiente parou de responder; tentando detectar de novo.");
+  logPrintf("Sensor ambiente parou de responder; tentando detectar de novo.\n");
   chip = AmbientChip::None;
   lastDetectAt = millis();
   return false;

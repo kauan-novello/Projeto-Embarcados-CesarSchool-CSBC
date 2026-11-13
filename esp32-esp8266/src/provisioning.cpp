@@ -1,5 +1,6 @@
 #include "provisioning.h"
 #include "config.h"
+#include "logger.h"
 #include <WiFi.h>
 #include <WiFiManager.h>
 
@@ -28,7 +29,7 @@ static void onParamsSaved() {
   }
   activeConfig->pairingPending = true;
   deviceConfigSave(*activeConfig);
-  Serial.printf("Configuração salva: servidor %s:%u\n", activeConfig->brokerHost, activeConfig->brokerPort);
+  logPrintf("Configuração salva: servidor %s:%u\n", activeConfig->brokerHost, activeConfig->brokerPort);
 }
 
 static void fillParams(const DeviceConfig &config) {
@@ -55,37 +56,35 @@ static void setupPortal(DeviceConfig &config) {
 
 static void rebootUnlessReady(bool connected) {
   if (!connected || !deviceConfigIsComplete(*activeConfig)) {
-    Serial.println("Configuração incompleta ou Wi-Fi indisponível; reiniciando para tentar de novo.");
+    logPrintf("Configuração incompleta ou Wi-Fi indisponível; reiniciando para tentar de novo.\n");
     delay(1000);
     ESP.restart();
   }
 }
 
 void provisioningBegin(DeviceConfig &config) {
-  pinMode(PIN_CONFIG_BUTTON, INPUT_PULLUP);
   WiFi.mode(WIFI_STA);
   setupPortal(config);
 
   bool connected;
   if (deviceConfigIsComplete(config)) {
-    Serial.printf("Dispositivo %s: conectando ao Wi-Fi salvo (sem Wi-Fi, abre o portal %s, senha %s)...\n",
+    logPrintf("Dispositivo %s: conectando ao Wi-Fi salvo (sem Wi-Fi, abre o portal %s, senha %s)...\n",
                   deviceId(), apName, CONFIG_AP_PASSWORD);
     connected = wifiManager.autoConnect(apName, CONFIG_AP_PASSWORD);
   } else {
-    Serial.printf("Sem configuração: portal aberto na rede %s (senha %s)\n", apName, CONFIG_AP_PASSWORD);
+    logPrintf("Sem configuração: portal aberto na rede %s (senha %s)\n", apName, CONFIG_AP_PASSWORD);
     connected = wifiManager.startConfigPortal(apName, CONFIG_AP_PASSWORD);
   }
   rebootUnlessReady(connected);
 
   WiFi.setAutoReconnect(true);
-  Serial.print("Wi-Fi conectado, IP: ");
-  Serial.println(WiFi.localIP());
+  logPrintf("Wi-Fi conectado, IP: %s\n", WiFi.localIP().toString().c_str());
 
   if (config.pairingPending) {
     pairingWindowEndsAt = millis() + PAIRING_WINDOW_MS;
     config.pairingPending = false;
     deviceConfigSave(config);
-    Serial.printf("Modo pareamento por %lu min: vincule %s pelo app.\n", PAIRING_WINDOW_MS / 60000UL, apName);
+    logPrintf("Modo pareamento por %lu min: vincule %s pelo app.\n", PAIRING_WINDOW_MS / 60000UL, apName);
   }
 }
 
@@ -93,19 +92,8 @@ bool provisioningInPairingWindow() {
   return pairingWindowEndsAt != 0 && (long)(pairingWindowEndsAt - millis()) > 0;
 }
 
-void provisioningLoop(DeviceConfig &config) {
-  static unsigned long pressedSince = 0;
-  if (digitalRead(PIN_CONFIG_BUTTON) == HIGH) {
-    pressedSince = 0;
-    return;
-  }
-  if (pressedSince == 0) {
-    pressedSince = millis();
-    return;
-  }
-  if (millis() - pressedSince < CONFIG_BUTTON_HOLD_MS) return;
-
-  Serial.printf("Botão BOOT segurado: portal aberto na rede %s (senha %s)\n", apName, CONFIG_AP_PASSWORD);
+void provisioningOpenPortal(DeviceConfig &config) {
+  logPrintf("Botão BOOT segurado: portal aberto na rede %s (senha %s)\n", apName, CONFIG_AP_PASSWORD);
   fillParams(config);
   wifiManager.startConfigPortal(apName, CONFIG_AP_PASSWORD);
   ESP.restart();
