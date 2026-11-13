@@ -37,7 +37,7 @@ def real_hourly_energy(
         .order_by(InverterReading.recorded_at)
         .all()
     )
-    readings = [(_as_utc(at), float(value)) for at, value in rows]
+    readings = [(_as_utc(at), float(value)) for at, value in rows if value is not None]
 
     def counter_at(edge: datetime, day) -> float | None:
         if edge.astimezone(PLANT_TZ).time() == datetime.min.time() and _local_date(edge) == day:

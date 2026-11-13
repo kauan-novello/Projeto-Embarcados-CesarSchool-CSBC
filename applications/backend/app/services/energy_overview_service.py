@@ -1,7 +1,7 @@
 from calendar import monthrange
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
-from typing import Literal
+from typing import Literal, cast
 
 from sqlalchemy.orm import Session
 
@@ -78,7 +78,7 @@ def load_hours(
     for at, kind, value in predictions:
         hour = hours.setdefault(_as_utc(at), HourEnergy())
         if kind == OBSERVED or hour.kind != OBSERVED:
-            hour.expected_wh, hour.kind = value, kind
+            hour.expected_wh, hour.kind = value, cast(ExpectedKind, kind)
 
     clean = (
         db.query(PlantHourly.hour_start, PlantHourly.energy_wh)
@@ -97,8 +97,8 @@ def load_hours(
         for at, hour in hours.items()
         if hour.real_wh is None and now - LIVE_REAL_WINDOW <= at and at + HOUR <= now
     ]
-    for at, value in real_hourly_energy(db, system=system, hours=recent).items():
-        hours[at].real_wh = value
+    for at, energy in real_hourly_energy(db, system=system, hours=recent).items():
+        hours[at].real_wh = energy
     return hours
 
 
