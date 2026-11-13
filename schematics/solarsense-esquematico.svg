@@ -58,7 +58,7 @@
     <text x="1088" y="548">Botão BOOT (onboard)</text>
   </g>
   <g font-size="12" fill="#555">
-    <text x="78" y="166">divisor resistivo: LDR + R (ref. 10 kΩ)</text>
+    <text x="78" y="166">divisor resistivo: LDR + R de 1 kΩ</text>
     <text x="78" y="386">chip detectado pelo ID (0x60 / 0x58)</text>
     <text x="78" y="586">módulo de 3 pinos</text>
     <text x="1088" y="166">UART 9600 8N1, quadro de 9 bytes</text>
@@ -149,6 +149,6 @@
     <rect x="410" y="774" width="28" height="4" fill="#c0392b"/><text x="446" y="780">UART</text>
   </g>
   <text x="56" y="806" font-size="12" fill="#555">O ESP32 opera em 3,3 V; o ZPH02 é alimentado pelo pino VIN (5 V da USB).</text>
-  <text x="56" y="824" font-size="12" fill="#555">Valor do resistor do divisor do LDR é de referência; os demais componentes</text>
+  <text x="56" y="824" font-size="12" fill="#555">Divisor do LDR com resistor de 1 kΩ; os demais componentes</text>
   <text x="56" y="842" font-size="12" fill="#555">são módulos prontos. Não há atuadores: o fluxo é só do sensor ao dashboard.</text>
 </svg>
