@@ -10,6 +10,7 @@ services:
       - sh
       - -c
       - |
+        rm -f /mosquitto/passwd &&
         mosquitto_passwd -b -c /mosquitto/passwd device "$$MQTT_DEVICE_PASSWORD" &&
         mosquitto_passwd -b /mosquitto/passwd backend "$$MQTT_BACKEND_PASSWORD" &&
         chown mosquitto:mosquitto /mosquitto/passwd &&
