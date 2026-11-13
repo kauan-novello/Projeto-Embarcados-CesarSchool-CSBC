@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" font-family="DejaVu Sans, Arial, sans-serif">
+  <rect width="1400" height="900" fill="#ffffff"/>
+
+  <text x="40" y="48" font-size="26" font-weight="bold" fill="#1d1d1d">SolarSense – esquemático de ligações (ESP32 + sensores)</text>
+  <text x="40" y="76" font-size="14" fill="#555">Firmware em /esp32-esp8266 · ambiente esp32dev-live · mapa de pinos em include/config.h</text>
+
+  <defs>
+    <g id="gnd">
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#1d1d1d" stroke-width="2"/>
+      <line x1="-12" y1="10" x2="12" y2="10" stroke="#1d1d1d" stroke-width="2"/>
+      <line x1="-8" y1="15" x2="8" y2="15" stroke="#1d1d1d" stroke-width="2"/>
+      <line x1="-4" y1="20" x2="4" y2="20" stroke="#1d1d1d" stroke-width="2"/>
+    </g>
+  </defs>
+
+  <rect x="560" y="110" width="280" height="660" rx="14" fill="#f4f6f8" stroke="#1d1d1d" stroke-width="3"/>
+  <text x="700" y="148" font-size="20" font-weight="bold" text-anchor="middle" fill="#1d1d1d">ESP32 DevKit</text>
+  <text x="700" y="170" font-size="13" text-anchor="middle" fill="#555">board = esp32dev</text>
+  <rect x="650" y="700" width="100" height="70" rx="6" fill="#dfe3e8" stroke="#1d1d1d" stroke-width="2"/>
+  <text x="700" y="740" font-size="13" text-anchor="middle" fill="#1d1d1d">USB</text>
+
+  <g font-size="14" fill="#1d1d1d">
+    <circle cx="560" cy="210" r="5" fill="#d62828"/><text x="574" y="215">3V3</text>
+    <circle cx="560" cy="250" r="5" fill="#1d1d1d"/><text x="574" y="255">GND</text>
+    <circle cx="560" cy="290" r="5" fill="#2a7de1"/><text x="574" y="295">GPIO36 (ADC1_CH0)</text>
+    <circle cx="560" cy="420" r="5" fill="#2a9d8f"/><text x="574" y="425">GPIO21 (SDA)</text>
+    <circle cx="560" cy="460" r="5" fill="#e9a100"/><text x="574" y="465">GPIO22 (SCL)</text>
+    <circle cx="560" cy="600" r="5" fill="#8e44ad"/><text x="574" y="605">GPIO4</text>
+
+    <circle cx="840" cy="210" r="5" fill="#e07a00"/><text x="826" y="215" text-anchor="end">VIN (5 V)</text>
+    <circle cx="840" cy="250" r="5" fill="#1d1d1d"/><text x="826" y="255" text-anchor="end">GND</text>
+    <circle cx="840" cy="340" r="5" fill="#c0392b"/><text x="826" y="345" text-anchor="end">GPIO16 (RX2)</text>
+    <circle cx="840" cy="600" r="5" fill="#16a085"/><text x="826" y="605" text-anchor="end">GPIO0 (BOOT)</text>
+  </g>
+
+  <g stroke-width="2" fill="none">
+    <line x1="560" y1="210" x2="500" y2="210" stroke="#d62828"/>
+    <line x1="560" y1="250" x2="500" y2="250" stroke="#1d1d1d"/>
+    <line x1="840" y1="250" x2="900" y2="250" stroke="#1d1d1d"/>
+  </g>
+  <text x="494" y="215" font-size="12" text-anchor="end" fill="#d62828">3V3 (LDR, BME, DHT)</text>
+  <use href="#gnd" x="500" y="250"/>
+  <use href="#gnd" x="900" y="250"/>
+
+  <g fill="#ffffff" stroke="#1d1d1d" stroke-width="2">
+    <rect x="60" y="120" width="270" height="190" rx="10"/>
+    <rect x="60" y="340" width="270" height="170" rx="10"/>
+    <rect x="60" y="540" width="270" height="140" rx="10"/>
+    <rect x="1070" y="120" width="270" height="250" rx="10"/>
+    <rect x="1070" y="520" width="270" height="150" rx="10"/>
+  </g>
+
+  <g font-size="15" font-weight="bold" fill="#1d1d1d">
+    <text x="78" y="148">LDR – irradiância</text>
+    <text x="78" y="368">BME280 / BMP280 – I²C</text>
+    <text x="78" y="568">DHT11 – umidade</text>
+    <text x="1088" y="148">ZPH02 – particulados</text>
+    <text x="1088" y="548">Botão BOOT (onboard)</text>
+  </g>
+  <g font-size="12" fill="#555">
+    <text x="78" y="166">divisor resistivo: LDR + R (ref. 10 kΩ)</text>
+    <text x="78" y="386">chip detectado pelo ID (0x60 / 0x58)</text>
+    <text x="78" y="586">módulo de 3 pinos</text>
+    <text x="1088" y="166">UART 9600 8N1, quadro de 9 bytes</text>
+    <text x="1088" y="566">3 s pressionado: reabre o portal</text>
+  </g>
+
+  <g stroke="#1d1d1d" stroke-width="2" fill="none">
+    <rect x="115" y="195" width="30" height="40" fill="#fff3cd"/>
+    <rect x="115" y="255" width="30" height="40" fill="#e9ecef"/>
+    <line x1="130" y1="185" x2="130" y2="195"/>
+    <line x1="130" y1="235" x2="130" y2="255"/>
+    <line x1="130" y1="295" x2="130" y2="300"/>
+    <line x1="130" y1="245" x2="330" y2="245" stroke="#2a7de1"/>
+  </g>
+  <circle cx="130" cy="245" r="4" fill="#2a7de1"/>
+  <text x="155" y="219" font-size="13" fill="#1d1d1d">LDR</text>
+  <text x="155" y="279" font-size="13" fill="#1d1d1d">R</text>
+  <text x="318" y="239" font-size="12" text-anchor="end" fill="#2a7de1">SIG</text>
+  <line x1="130" y1="185" x2="130" y2="180" stroke="#d62828" stroke-width="2"/>
+  <text x="140" y="190" font-size="12" fill="#d62828">3V3</text>
+  <use href="#gnd" x="130" y="300"/>
+
+  <g font-size="13" fill="#1d1d1d">
+    <text x="78" y="410">SDA</text><text x="78" y="450">SCL</text>
+    <text x="78" y="480" fill="#d62828">VCC → 3V3</text>
+    <text x="200" y="480">GND ⏚</text>
+  </g>
+  <g stroke-width="2" fill="none">
+    <line x1="330" y1="405" x2="440" y2="405" stroke="#2a9d8f"/>
+    <line x1="440" y1="405" x2="440" y2="420" stroke="#2a9d8f"/>
+    <line x1="440" y1="420" x2="560" y2="420" stroke="#2a9d8f"/>
+    <line x1="330" y1="445" x2="480" y2="445" stroke="#e9a100"/>
+    <line x1="480" y1="445" x2="480" y2="460" stroke="#e9a100"/>
+    <line x1="480" y1="460" x2="560" y2="460" stroke="#e9a100"/>
+    <line x1="330" y1="245" x2="400" y2="245" stroke="#2a7de1"/>
+    <line x1="400" y1="245" x2="400" y2="290" stroke="#2a7de1"/>
+    <line x1="400" y1="290" x2="560" y2="290" stroke="#2a7de1"/>
+    <line x1="330" y1="610" x2="440" y2="610" stroke="#8e44ad"/>
+    <line x1="440" y1="610" x2="440" y2="600" stroke="#8e44ad"/>
+    <line x1="440" y1="600" x2="560" y2="600" stroke="#8e44ad"/>
+  </g>
+  <g font-size="12" fill="#555">
+    <text x="318" y="399" text-anchor="end">SDA</text>
+    <text x="318" y="439" text-anchor="end">SCL</text>
+    <text x="318" y="604" text-anchor="end">DATA</text>
+  </g>
+  <g font-size="13" fill="#1d1d1d">
+    <text x="78" y="620" fill="#d62828">VCC → 3V3</text>
+    <text x="78" y="650">GND ⏚</text>
+  </g>
+
+  <g font-size="13" fill="#1d1d1d">
+    <text x="1088" y="196" fill="#e07a00">VCC → 5 V (VIN)</text>
+    <text x="1088" y="226">GND ⏚</text>
+    <text x="1088" y="346">TX → GPIO16</text>
+  </g>
+  <g stroke-width="2" fill="none">
+    <line x1="1070" y1="340" x2="960" y2="340" stroke="#c0392b"/>
+    <line x1="960" y1="340" x2="840" y2="340" stroke="#c0392b"/>
+    <line x1="1070" y1="190" x2="990" y2="190" stroke="#e07a00"/>
+    <line x1="990" y1="190" x2="990" y2="210" stroke="#e07a00"/>
+    <line x1="990" y1="210" x2="840" y2="210" stroke="#e07a00"/>
+    <line x1="1070" y1="600" x2="840" y2="600" stroke="#16a085"/>
+  </g>
+  <text x="1020" y="334" font-size="12" text-anchor="middle" fill="#c0392b">TX</text>
+  <g stroke="#1d1d1d" stroke-width="2" fill="#e9ecef">
+    <circle cx="1130" cy="600" r="14"/>
+  </g>
+  <text x="1160" y="605" font-size="13" fill="#1d1d1d">chave → GND</text>
+  <use href="#gnd" x="1250" y="630"/>
+
+  <g stroke-width="2" fill="none">
+    <line x1="700" y1="770" x2="700" y2="820" stroke="#e07a00"/>
+  </g>
+  <rect x="610" y="820" width="180" height="40" rx="8" fill="#fff4e0" stroke="#e07a00" stroke-width="2"/>
+  <text x="700" y="845" font-size="14" text-anchor="middle" fill="#1d1d1d">Alimentação USB 5 V</text>
+
+  <rect x="40" y="716" width="470" height="150" rx="8" fill="#f8f9fa" stroke="#adb5bd"/>
+  <text x="56" y="742" font-size="14" font-weight="bold" fill="#1d1d1d">Legenda</text>
+  <g font-size="12" fill="#1d1d1d">
+    <rect x="56" y="754" width="28" height="4" fill="#d62828"/><text x="92" y="760">3V3</text>
+    <rect x="140" y="754" width="28" height="4" fill="#e07a00"/><text x="176" y="760">5 V</text>
+    <rect x="220" y="754" width="28" height="4" fill="#1d1d1d"/><text x="256" y="760">GND</text>
+    <rect x="310" y="754" width="28" height="4" fill="#2a7de1"/><text x="346" y="760">sinal analógico</text>
+    <rect x="56" y="774" width="28" height="4" fill="#2a9d8f"/><text x="92" y="780">I²C SDA</text>
+    <rect x="160" y="774" width="28" height="4" fill="#e9a100"/><text x="196" y="780">I²C SCL</text>
+    <rect x="270" y="774" width="28" height="4" fill="#8e44ad"/><text x="306" y="780">1-wire DHT11</text>
+    <rect x="410" y="774" width="28" height="4" fill="#c0392b"/><text x="446" y="780">UART</text>
+  </g>
+  <text x="56" y="806" font-size="12" fill="#555">O ESP32 opera em 3,3 V; o ZPH02 é alimentado pelo pino VIN (5 V da USB).</text>
+  <text x="56" y="824" font-size="12" fill="#555">Valor do resistor do divisor do LDR é de referência; os demais componentes</text>
+  <text x="56" y="842" font-size="12" fill="#555">são módulos prontos. Não há atuadores: o fluxo é só do sensor ao dashboard.</text>
+</svg>

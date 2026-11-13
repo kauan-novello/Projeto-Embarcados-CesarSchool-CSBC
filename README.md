@@ -103,6 +103,12 @@ cd applications/backend
 MQTT_USERNAME=device MQTT_PASSWORD=... python scripts/simulate_esp32.py A1B2C3D48823 --pairing
 ```
 
+### Circuito
+
+![Esquemático de ligações do ESP32](schematics/solarsense-esquematico.png)
+
+O arquivo vetorial está em [`schematics/solarsense-esquematico.svg`](schematics/solarsense-esquematico.svg). Os pinos seguem `esp32-esp8266/include/config.h`: LDR no GPIO36, BME280/BMP280 em I²C (GPIO21 e GPIO22), DHT11 no GPIO4, ZPH02 na UART2 (GPIO16) e o botão BOOT no GPIO0.
+
 ## Segurança
 
 - O broker não aceita conexões anônimas. O usuário `device` só publica em `solarsense/+/readings` e o usuário `backend` só lê desse tópico (`infra/mosquitto/acl`). As senhas vêm do `.env` e o arquivo de senhas é gerado quando o container sobe.
@@ -134,6 +140,8 @@ Os mesmos comandos, mais `ruff` e `mypy`, rodam no GitHub Actions a cada push (`
 │   ├── sungrow-collector/    coletor do inversor
 │   └── weather-station/      ESP virtual com clima da Open-Meteo
 ├── esp32-esp8266/            SE — firmware
+├── schematics/               SE — esquemático das ligações (SVG e PNG)
+├── docs/                     SE — relatório do Check Point (PDF)
 ├── data/raw/                 AM/ML1 — dados do INMET usados na comparação
 ├── notebooks/                AM/ML1 — análise exploratória
 ├── src/                      AM/ML1 — features, treino e previsão
