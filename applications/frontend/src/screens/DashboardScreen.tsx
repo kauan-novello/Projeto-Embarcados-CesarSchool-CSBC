@@ -421,7 +421,7 @@ export function DashboardScreen({
                   value={formatMetric(latestReading.ambientHumidityPct, "%")}
                 />
                 <MetricCard icon={Sun} label="Irradiância"
-                  hint="Estimativa de quanta luz do sol chega ao local, medida por um sensor de luz (LDR): 0% é escuro, 100% é sol pleno. É uma aproximação, não uma medida em W/m²." value={`${latestReading.irradiance}%`} />
+                  hint="Estimativa de quanta luz do sol chega ao local, medida por um sensor de luz (LDR): 0% é escuro, 100% é sol pleno. É uma aproximação, não uma medida em W/m²." value={formatMetric(latestReading.irradiance, "%")} />
                 <MetricCard icon={Gauge} label="Pressão"
                   hint="Pressão atmosférica. Quedas costumam indicar mudança de tempo, como chuva ou nuvens." value={formatMetric(latestReading.pressureHpa, " hPa")} />
                 <MetricCard
