@@ -60,7 +60,7 @@
   <g font-size="12" fill="#555">
     <text x="78" y="166">divisor resistivo: LDR + R de 1 kΩ</text>
     <text x="78" y="386">chip detectado pelo ID (0x60 / 0x58)</text>
-    <text x="78" y="586">módulo de 3 pinos</text>
+    <text x="78" y="586">sensor de 4 pinos (NC livre)</text>
     <text x="1088" y="166">UART 9600 8N1, quadro de 9 bytes</text>
     <text x="1088" y="566">3 s pressionado: reabre o portal</text>
   </g>
@@ -85,6 +85,7 @@
     <text x="78" y="410">SDA</text><text x="78" y="450">SCL</text>
     <text x="78" y="480" fill="#d62828">VCC → 3V3</text>
     <text x="200" y="480">GND ⏚</text>
+    <text x="78" y="500" font-size="12" fill="#555">SDO → GND · CSB → 3V3</text>
   </g>
   <g stroke-width="2" fill="none">
     <line x1="330" y1="405" x2="440" y2="405" stroke="#2a9d8f"/>
@@ -108,12 +109,15 @@
   <g font-size="13" fill="#1d1d1d">
     <text x="78" y="620" fill="#d62828">VCC → 3V3</text>
     <text x="78" y="650">GND ⏚</text>
+    <text x="78" y="671" font-size="12" fill="#555">pull-up de 10 kΩ entre DATA e 3V3</text>
   </g>
 
   <g font-size="13" fill="#1d1d1d">
     <text x="1088" y="196" fill="#e07a00">VCC → 5 V (VIN)</text>
     <text x="1088" y="226">GND ⏚</text>
-    <text x="1088" y="346">TX → GPIO16</text>
+    <text x="1088" y="256">MOD → GND ⏚</text>
+    <text x="1088" y="286" font-size="12" fill="#555">RXD sem ligação</text>
+    <text x="1088" y="346">TX → R 1 kΩ → GPIO16</text>
   </g>
   <g stroke-width="2" fill="none">
     <line x1="1070" y1="340" x2="960" y2="340" stroke="#c0392b"/>
@@ -123,6 +127,8 @@
     <line x1="990" y1="210" x2="840" y2="210" stroke="#e07a00"/>
     <line x1="1070" y1="600" x2="840" y2="600" stroke="#16a085"/>
   </g>
+  <rect x="920" y="331" width="44" height="18" fill="#fff" stroke="#1d1d1d" stroke-width="2"/>
+  <text x="942" y="322" font-size="12" text-anchor="middle" fill="#1d1d1d">1 kΩ</text>
   <text x="1020" y="334" font-size="12" text-anchor="middle" fill="#c0392b">TX</text>
   <g stroke="#1d1d1d" stroke-width="2" fill="#e9ecef">
     <circle cx="1130" cy="600" r="14"/>
@@ -149,6 +155,6 @@
     <rect x="410" y="774" width="28" height="4" fill="#c0392b"/><text x="446" y="780">UART</text>
   </g>
   <text x="56" y="806" font-size="12" fill="#555">O ESP32 opera em 3,3 V; o ZPH02 é alimentado pelo pino VIN (5 V da USB).</text>
-  <text x="56" y="824" font-size="12" fill="#555">Divisor do LDR com resistor de 1 kΩ; os demais componentes</text>
-  <text x="56" y="842" font-size="12" fill="#555">são módulos prontos. Não há atuadores: o fluxo é só do sensor ao dashboard.</text>
+  <text x="56" y="824" font-size="12" fill="#555">Resistores: 1 kΩ no divisor do LDR, 1 kΩ em série no TX do ZPH02</text>
+  <text x="56" y="842" font-size="12" fill="#555">e 10 kΩ de pull-up no DHT11. Não há atuadores.</text>
 </svg>
